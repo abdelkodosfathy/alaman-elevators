@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ALAMAN ELEVATORS | Configurator</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&family=Inter:wght@400;600&display=swap">
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+--bg:#080808;--bg2:#111;--card:#151515;--el:#1C1C1C;--g:#C9A227;--g2:#E5C35B;--g3:#A8892D;--tx:#F5F5F5;--mu:#A8A8A8;--bd:rgba(201,162,39,.18)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:Cairo,Inter,sans-serif;font-weight:300;line-height:1.7}
+a{color:inherit;text-decoration:none}h2,h3,h4{font-weight:600;margin:0 0 8px}
+button,input,select{font:inherit;color:var(--tx)}
+button{cursor:pointer;background:transparent;border:1px solid var(--bd);padding:8px 18px}button:hover,button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{outline:2px solid var(--g2);outline-offset:1px}
+.gold{background:var(--g);border-color:var(--g);color:#080808;font-weight:600}.gold:disabled{opacity:.4}
+input,select{width:100%;background:var(--bg2);border:1px solid var(--bd);padding:9px;margin-top:3px}input:disabled,select:disabled{opacity:.5}
+label{display:block;font-size:13px;color:var(--mu);margin-top:12px}.lab{font:600 11px Inter;letter-spacing:2px;color:var(--g);text-transform:uppercase;margin:20px 0 4px}
+.hd{border-bottom:1px solid var(--bd);padding:12px 20px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.logo b{font:600 17px Inter;letter-spacing:5px;color:var(--g2)}.logo small{display:block;color:var(--mu);font-size:11px}
+.steps{display:flex;gap:4px;padding:14px 20px;overflow-x:auto}.steps a{flex:1;min-width:92px;border-bottom:2px solid #262626;padding:4px 0;font:11px Inter;letter-spacing:1px;color:var(--mu);text-align:center}
+.steps .on{border-color:var(--g);color:var(--g2)}.steps .ok{border-color:var(--g3)}
+.cfg{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr) 300px;gap:18px;padding:0 20px 50px;max-width:1500px;margin:0 auto}.cfg.one{grid-template-columns:1fr}
+@media(max-width:1000px){.cfg{grid-template-columns:1fr}}
+.pan{background:var(--card);border:1px solid var(--bd);padding:20px}.sticky{position:sticky;top:12px;align-self:start}
+.grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(210px,1fr))}
+.tile{text-align:right;background:var(--el);border:1px solid var(--bd);padding:0;overflow:hidden;transition:.2s}.tile .in{padding:14px}.tile:hover,.tile.sel{border-color:var(--g)}.tile.sel{background:#1f1b0e}
+.tile[disabled]{opacity:.35;cursor:not-allowed}.tile .img{height:90px;background:linear-gradient(135deg,#222,#0c0c0c);display:flex;align-items:center;justify-content:center;font:600 30px Inter;color:var(--g3);transition:.3s}.tile:hover .img{transform:scale(1.04)}
+.sw{width:100%;height:46px;border:1px solid #333;display:block}
+.row{display:flex;justify-content:space-between;gap:8px;padding:6px 0;border-bottom:1px solid #ffffff10}.mu{color:var(--mu)}
+.tot{font:300 34px Inter;color:var(--g2)}.note{font-size:12px;color:var(--mu);border-right:2px solid var(--g);padding:2px 10px;margin-top:12px}
+.err{color:#ff8a8a;font-size:13px;margin:6px 0}.bar{display:flex;justify-content:space-between;gap:10px;margin-top:22px}
+.tabs{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:12px}.tabs button{font:11px Inter;letter-spacing:1px;padding:5px 10px}.tabs .on{border-color:var(--g);color:var(--g2)}
+.shell{display:flex;min-height:100vh}.side{width:210px;background:var(--bg2);border-left:1px solid var(--bd);padding:20px 14px;display:flex;flex-direction:column;gap:4px}
+.side a{padding:8px 12px;color:var(--mu);border:1px solid transparent}.side a.on{color:var(--g2);border-color:var(--bd)}.main{flex:1;padding:24px;min-width:0}
+@media(max-width:800px){.shell{flex-direction:column}.side{width:100%;flex-direction:row;flex-wrap:wrap}}
+.tw{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:14px}th,td{padding:9px;text-align:right;border-bottom:1px solid #ffffff12;white-space:nowrap}th{color:var(--g);font-weight:400}
+#chatb{position:fixed;bottom:18px;right:18px;width:54px;height:54px;border-radius:50%;background:#000;border-color:var(--g);z-index:9;padding:0}
+#chat{position:fixed;bottom:84px;right:18px;width:min(340px,92vw);z-index:9}.msgs{max-height:260px;overflow:auto}.msgs p{margin:6px 0;font-size:14px}.msgs .u{color:var(--g2)}
+</style>
+</head>
+<body><div id="app"></div><div id="chat"></div><button id="chatb" aria-label="مساعد ALAMAN" onclick="CH.open=!CH.open;chat()">💬</button>
+<script>
+/* ===== Mock configuration data (DEMO placeholders, replaceable by a backend) ===== */
+const TYPES=[['villa','مصعد فيلا','Villa Elevator','للفلل والمنازل الخاصة'],['residential','مصعد سكني','Residential Elevator','للعمارات السكنية'],['commercial','مصعد تجاري','Commercial Elevator','للمولات والمباني التجارية'],['hospital','مصعد مستشفى','Hospital Elevator','لنقل المرضى والأسرّة'],['freight','مصعد بضائع','Freight Elevator','للأحمال والمعدات'],['panoramic','مصعد بانوراما','Panoramic Elevator','كابينة زجاجية بإطلالة']];
+const PKGS=[['basic','BASIC','حل عملي واقتصادي'],['standard','STANDARD','توازن مثالي بين الأداء والتصميم'],['premium','PREMIUM','أعلى مستوى من المواصفات والتشطيبات']];
+const KEYS=['type','package','technical','design','options','review','quote'],KN=['ELEVATOR TYPE','PACKAGE','TECHNICAL','INTERIOR','OPTIONS','REVIEW','QUOTE REQUEST'];
+const CATS=[['walls','WALLS'],['floor','FLOOR'],['ceiling','CEILING'],['lighting','LIGHTING'],['doors','DOORS'],['mirror','MIRROR'],['handrail','HANDRAIL'],['panel','CONTROL PANEL']];
+const OPTS=[['w_std','walls','ستانلس قياسي',0,'#8e9296'],['w_lam','walls','لامينيت',3000,'#8a7b6a'],['w_hair','walls','ستانلس Hairline',12000,'#b3b7bb'],['w_prem','walls','ستانلس مميز',25000,'#d2d5d8'],['w_black','walls','ستانلس أسود',30000,'#262628'],['w_glass','walls','زجاج',35000,'#5f7e8a'],['w_wood','walls','خشب فاخر',20000,'#7b5a3a'],
+['f_pvc','floor','PVC',0,'#4a4a4a'],['f_gran','floor','جرانيت',10000,'#3b3f44'],['f_marb','floor','رخام',30000,'#d9d6cf'],['f_stone','floor','حجر مميز',45000,'#a69880'],
+['c_basic','ceiling','قياسي',0,'#cfcfcf'],['c_mod','ceiling','عصري',8000,'#bdb7aa'],['c_prem','ceiling','مميز',14000,'#2d2d2f'],['c_lux','ceiling','فاخر',24000,'#4a3d1a'],
+['l_neu','lighting','محايدة',0,'#ffffff'],['l_warm','lighting','دافئة',4000,'#ffd08a'],['l_cool','lighting','أبيض بارد',4000,'#cfe6ff'],
+['d_std','doors','قياسي',0,'#9a9ea3'],['d_ss','doors','ستانلس',9000,'#c4c7ca'],['d_black','doors','أسود',14000,'#222'],['d_gold','doors','ذهبي',26000,'#C9A227'],['d_glass','doors','زجاج',20000,'#6d8d99'],
+['m_none','mirror','بدون',0,'#0000'],['m_half','mirror','نصف مرآة',6000,'#dfeaf0'],['m_full','mirror','مرآة كاملة',12000,'#dfeaf0'],
+['h_none','handrail','بدون',0,'#0000'],['h_ss','handrail','ستانلس',4000,'#cfd2d5'],['h_gold','handrail','ذهبي',8000,'#E5C35B'],['h_black','handrail','أسود',5000,'#111'],
+['p_std','panel','قياسي',0,'#222'],['p_prem','panel','مميز',12000,'#111'],['p_smart','panel','ذكي',22000,'#0b1620'],
+['x_smart','extra','ربط المنزل الذكي',25000,''],['x_phone','extra','هاتف طوارئ',6000,''],['x_mirror','extra','مرآة إضافية',7000,''],['x_light','extra','إضاءة مميزة',10000,''],['x_rail','extra','درابزين إضافي',5000,'']].map(([id,cat,name,price,color])=>({id,cat,name,price,color}));
+const SPECS=[['ratedLoad','CAPACITY','الحمولة الاسمية','kg','n',[200,3000],'أقصى حمولة مسموحة'],['passengers','CAPACITY','عدد الركاب','','n',[2,24],''],
+['cabinW','DIMENSIONS','عرض الكابينة','mm','n',[800,2400],''],['cabinD','DIMENSIONS','عمق الكابينة','mm','n',[800,3200],''],['cabinH','DIMENSIONS','ارتفاع الكابينة','mm','n',[2000,2800],''],['shaftW','DIMENSIONS','عرض البئر','mm','n',[1200,3000],''],['shaftD','DIMENSIONS','عمق البئر','mm','n',[1200,3600],''],['doorW','DIMENSIONS','عرض الباب','mm','n',[700,1400],''],
+['speed','PERFORMANCE','السرعة','m/s','s',['0.6','1.0','1.5','2.0'],'تؤثر على السعر'],['stops','PERFORMANCE','عدد الوقفات','','n',[2,40],'كل وقفة فوق الحد تُضاف للسعر'],['floors','PERFORMANCE','عدد الطوابق','','n',[2,40],''],['travel','PERFORMANCE','ارتفاع المشوار','m','n',[2,120],''],
+['machine','MECHANICAL','ماكينة الجر','','s',['Standard traction','Gearless traction','Gearless (Premium)'],'محددة تقنياً بالباقة'],['drive','MECHANICAL','نظام القيادة','','s',['VVVF','VVVF + Regen'],''],['controller','MECHANICAL','وحدة التحكم','','s',['Standard','Advanced','Premium'],'محددة تقنياً بالباقة'],
+['emergency','SAFETY','نظام الطوارئ','','s',['ARD basic','ARD + Intercom','ARD + Intercom + GSM'],''],['doorSafety','SAFETY','أمان الباب','','s',['Light curtain','3D curtain'],''],['backup','SAFETY','الطاقة الاحتياطية','','s',['None','UPS','UPS + generator link'],'']];
+const BASE={villa:[250,320,450],residential:[280,360,480],commercial:[420,560,760],hospital:[500,650,880],freight:[380,480,620],panoramic:[450,600,820]};
+const LOAD={villa:[450,630,630],residential:[630,630,800],commercial:[800,1000,1275],hospital:[1275,1600,1600],freight:[1000,2000,3000],panoramic:[450,630,800]};
+const AV=['w_std','w_lam','f_pvc','c_basic','l_neu','d_std','m_none','h_none','h_ss','p_std','x_phone','x_mirror','x_rail'];
+const AVS=[...AV,'w_hair','w_wood','f_gran','c_mod','l_warm','l_cool','d_ss','d_black','m_half','h_black','p_prem','x_light'],AVP=OPTS.map(o=>o.id);
+function seedDb(){const configs={};TYPES.forEach(([t])=>PKGS.forEach(([p],i)=>{const l=LOAD[t][i],sp=i&&(t==='commercial'||t==='hospital')&&i===2?'1.5':i?'1.0':'0.6';
+ configs[t+'.'+p]={base:BASE[t][i]*1000,available:[AV,AVS,AVP][i],locked:['machine','controller'],specs:{ratedLoad:l,passengers:Math.round(l/80),cabinW:Math.round(l*1.2+700),cabinD:Math.round(l*1.4+800),cabinH:2200+i*100,shaftW:Math.round(l*1.2+1100),shaftD:Math.round(l*1.4+1250),doorW:800+i*100,speed:sp,stops:[4,5,5][i],floors:[4,5,5][i],travel:[12,15,15][i],machine:SPECS[12][5][i],drive:i<2?'VVVF':'VVVF + Regen',controller:SPECS[14][5][i],emergency:SPECS[15][5][i],doorSafety:i<2?'Light curtain':'3D curtain',backup:SPECS[17][5][i]}}}));
+ return{configs,options:Object.fromEntries(OPTS.map(o=>[o.id,o.price])),rules:[{id:'r1',label:'وقفة إضافية',param:'stops',op:'gt',value:5,kind:'perUnit',amount:15000},{id:'r2',label:'سرعة 1.5 م/ث',param:'speed',op:'eq',value:1.5,kind:'flat',amount:40000},{id:'r3',label:'حمولة 800 كجم أو أكثر',param:'ratedLoad',op:'gte',value:800,kind:'flat',amount:30000}],settings:{installPct:7,transport:5000}}}
+/* ===== Services (no React/DOM): configuration, pricing, whatsapp, chatbot ===== */
+const optOf=id=>OPTS.find(o=>o.id===id),tName=id=>TYPES.find(t=>t[0]===id)[1];
+const getConfiguration=(t,p)=>DB.configs[t+'.'+p]; // the only entry point the UI uses
+const defaultSel=(t,p)=>{const c=getConfiguration(t,p),opts={extra:[]};CATS.forEach(([k])=>opts[k]=OPTS.find(o=>o.cat===k&&c.available.includes(o.id)).id);return{specs:{...c.specs},opts}};
+function calculateQuotation(t,p,sel,db=DB){const c=db.configs[t+'.'+p],mods=[];
+ db.rules.forEach(r=>{const v=+sel.specs[r.param],hit=r.op==='gt'?v>r.value:r.op==='gte'?v>=r.value:v===r.value;
+  if(hit)mods.push({l:r.label+(r.kind==='perUnit'?` ×${v-r.value}`:''),v:r.kind==='perUnit'?(v-r.value)*r.amount:r.amount})});
+ const ids=[...CATS.map(([k])=>sel.opts[k]),...sel.opts.extra],opts=ids.map(id=>({l:optOf(id).name,v:db.options[id]})).filter(o=>o.v);
+ const extras=[...mods,...opts].reduce((s,x)=>s+x.v,0),install=Math.round(c.base*db.settings.installPct/100);
+ return{base:c.base,mods,opts,install,transport:db.settings.transport,total:c.base+extras+install+db.settings.transport}}
+function validateSpecs(sp){const e=[];SPECS.forEach(([id,,l,,k,a])=>{if(k==='n'&&!(+sp[id]>=a[0]&&+sp[id]<=a[1]))e.push(`من فضلك أدخل ${l} بين ${a[0]} و ${a[1]}.`)});
+ if(+sp.cabinW>=+sp.shaftW||+sp.cabinD>=+sp.shaftD)e.push('هذه المواصفات تحتاج إلى مراجعة فنية (الكابينة أكبر من البئر).');return e}
+const waMessage=q=>`مرحبًا ${q.contact.name}،\n\nتم استلام طلب عرض السعر الخاص بك من شركة الأمان للمصاعد والسلالم المتحركة.\n\nرقم الطلب:\n${q.id}\n\nنوع المصعد:\n${q.snap.type}\n\nالفئة:\n${q.snap.pkg}\n\nالسعر التقديري:\n${f(q.snap.b.total)}\n\nالسعر تقديري ويخضع للمراجعة الفنية.\n\nسيقوم فريقنا بالتواصل معك.`; // swap with WhatsApp Cloud API later
+const ChatbotService={answer(q){const m=k=>k.some(w=>q.includes(w)),mn=p=>Math.min(...TYPES.map(t=>DB.configs[t[0]+'.'+p].base));
+ if(m(['نوع','انواع','أنواع']))return 'أنواعنا: '+TYPES.map(t=>t[1]).join('، ')+'.';
+ if(m(['basic','standard','premium','فرق','باقة','فئة']))return PKGS.map(p=>`${p[1]}: ${p[2]} (${DB.configs['villa.'+p[0]].available.length} خيار تخصيص متاح للفيلا)`).join(' · ');
+ if(m(['تشطيب','خامات','رخام','خشب']))return 'التشطيبات المتاحة تختلف حسب الباقة، وتظهر في مرحلة Interior داخل المصمم.';
+ if(m(['سعر','اسعار','أسعار','تكلفة']))return `الأسعار التقديرية تبدأ من ${f(mn('basic'))} (Basic) وتتغير حسب النوع والمواصفات. السعر النهائي بعد المراجعة الفنية.`;
+ if(m(['بيانات','مطلوب','عرض سعر']))return 'محتاجين: الاسم، رقم الهاتف، المدينة، نوع المشروع، وأبعاد البئر لو متاحة.';
+ return 'مقدرش أجاوب على ده بدقة. ابدأ تصميم المصعد أو ابعت طلب عرض سعر وفريقنا يرد عليك.'}};
+/* ===== Store ===== */
+const f=n=>Math.round(n).toLocaleString('en-US')+' EGP';
+let DB=seedDb(),QUOTES=[],W={},A={tab:'dashboard',t:'villa',p:'premium'},CH={open:false,m:[]};
+function mkQuote(i,t,p,st){const sel=defaultSel(t,p),b=calculateQuotation(t,p,sel);return{id:'ALM-2026-'+String(i).padStart(4,'0'),contact:{name:['خالد إبراهيم','منى السيد','شركة النيل','مستشفى الشفاء','حسام عادل'][i-1],phone:'0100000100'+i,city:'القاهرة'},snap:{type:tName(t),pkg:p.toUpperCase(),typeId:t,pkgId:p,specs:sel.specs,opts:[...b.mods,...b.opts],b},status:st,date:'2026-09-0'+i}}
+function load(){try{const s=JSON.parse(localStorage.getItem('alaman3'));if(s){DB=s.DB;QUOTES=s.Q;return}}catch(e){}QUOTES=[mkQuote(1,'villa','premium','new'),mkQuote(2,'residential','standard','review'),mkQuote(3,'commercial','premium','quoted'),mkQuote(4,'hospital','standard','review'),mkQuote(5,'villa','basic','won')]}
+const save=()=>{try{localStorage.setItem('alaman3',JSON.stringify({DB,Q:QUOTES}))}catch(e){}};
+addEventListener('storage',()=>{load();route()});
+/* ===== Visual: ElevatorScene, one replaceable layer per part ===== */
+const col=id=>optOf(id).color,L={
+walls:s=>`<rect x="100" y="70" width="200" height="150" fill="${col(s.walls)}"/><polygon points="40,20 100,70 100,220 40,270" fill="${col(s.walls)}"/><polygon points="360,20 300,70 300,220 360,270" fill="${col(s.walls)}"/><polygon points="40,20 100,70 100,220 40,270" fill="#000" opacity=".3"/><polygon points="360,20 300,70 300,220 360,270" fill="#000" opacity=".45"/>`,
+floor:s=>`<polygon points="40,270 100,220 300,220 360,270" fill="${col(s.floor)}"/>`,
+ceiling:s=>`<polygon points="40,20 360,20 300,70 100,70" fill="${col(s.ceiling)}"/>`,
+lighting:s=>`<ellipse cx="200" cy="60" rx="150" ry="120" fill="url(#lg)" opacity=".55" style="mix-blend-mode:screen"/><defs><radialGradient id="lg"><stop offset="0" stop-color="${col(s.lighting)}"/><stop offset="1" stop-color="${col(s.lighting)}" stop-opacity="0"/></radialGradient></defs>`,
+mirror:s=>s.mirror==='m_none'?'':`<rect x="120" y="85" width="160" height="${s.mirror==='m_full'?125:60}" fill="${col(s.mirror)}" opacity=".35" stroke="#fff" stroke-opacity=".4"/>`,
+handrail:s=>s.handrail==='h_none'?'':`<g stroke="${col(s.handrail)}" stroke-width="5"><line x1="100" y1="170" x2="300" y2="170"/><line x1="40" y1="215" x2="100" y2="170"/><line x1="360" y1="215" x2="300" y2="170"/></g>`,
+panel:s=>`<rect x="318" y="105" width="22" height="56" fill="${col(s.panel)}" stroke="#C9A227" stroke-opacity=".5" transform="skewY(-8)"/>${s.panel==='p_smart'?'<circle cx="329" cy="120" r="4" fill="#E5C35B"/>':''}`,
+doors:(s,open)=>{const w=open?26:160,c=col(s.doors);return`<g stroke="#C9A227" stroke-opacity=".5"><rect x="40" y="20" width="${w}" height="250" fill="${c}"/><rect x="${360-w}" y="20" width="${w}" height="250" fill="${c}"/></g>`}};
+const scene=(s,open)=>`<svg viewBox="0 0 400 290" style="width:100%;background:#0a0a0a" role="img" aria-label="معاينة الكابينة">${['walls','floor','ceiling','lighting','mirror','handrail','panel'].map(k=>L[k](s)).join('')+L.doors(s,open)}</svg>`;
+/* ===== Router ===== */
+const go=h=>{location.hash=h};
+function route(){const h=(location.hash.slice(1)||'/configurator/type').split('/').filter(Boolean);
+ if(h[0]==='admin'){app.innerHTML=admin(h[1]||'dashboard');return}
+ if(h[0]==='quote'){app.innerHTML=success();return}
+ const k=h[1]||'type',i=KEYS.indexOf(k);if(i<0||(i>0&&!W.type)||(i>1&&!W.pkg)){W.type&&W.pkg?0:go('/configurator/'+(W.type?'package':'type'));if(i>0&&!W.type)return}
+ app.innerHTML=wizard(k,Math.max(i,0))}
+onhashchange=route;
+/* ===== Public configurator ===== */
+const pr=()=>W.pkg?calculateQuotation(W.type,W.pkg,W):null;
+const head=`<div class="hd"><a class="logo" href="#/configurator/type"><b>ALAMAN</b><small>شركة الأمان للمصاعد والسلالم المتحركة</small></a><a class="mu" href="#/admin">الإدارة</a></div>`;
+function wizard(k,i){let b='';const c=W.pkg&&getConfiguration(W.type,W.pkg);
+ const tile=(sel,on,body,ex='')=>`<button class="tile ${sel?'sel':''}" ${on?'':'disabled'} onclick="${ex}">${body}</button>`;
+ if(k==='type')b=`<h2>اختر نوع المصعد</h2><div class="grid">${TYPES.map(t=>tile(W.type===t[0],1,`<div class="img">${t[0][0].toUpperCase()}</div><div class="in"><h4>${W.type===t[0]?'✓ ':''}${t[1]}</h4><div class="mu" style="font:11px Inter">${t[2]}</div><small class="mu">${t[3]}</small></div>`,`pickType('${t[0]}')`)).join('')}</div>`;
+ if(k==='package')b=`<h2>اختر الباقة</h2><div class="grid">${PKGS.map(p=>{const cf=getConfiguration(W.type,p[0]);return tile(W.pkg===p[0],1,`<div class="in"><div class="lab">${p[1]}</div><h4>${p[2]}</h4><div class="tot" style="font-size:22px">يبدأ من ${f(cf.base)}</div><small class="mu">${cf.specs.ratedLoad} kg · ${cf.specs.passengers} ركاب · ${cf.specs.speed} m/s<br>${cf.available.length} خيار تخصيص متاح</small></div>`,`pickPkg('${p[0]}')`)}).join('')}</div>`;
+ if(k==='technical'){const secs=[...new Set(SPECS.map(s=>s[1]))];b=`<h2>المواصفات الفنية</h2>${secs.map(s=>`<div class="lab">${s}</div><div class="grid">${SPECS.filter(x=>x[1]===s).map(([id,,l,u,kd,a,help])=>{const lk=c.locked.includes(id);return `<label title="${help}">${l} ${u?`(${u})`:''} ${lk?'🔒':''}${kd==='n'?`<input type="number" ${lk?'disabled':''} value="${W.specs[id]}" onchange="W.specs['${id}']=+this.value;route()">`:`<select ${lk?'disabled':''} onchange="W.specs['${id}']=this.value;route()">${a.map(o=>`<option ${String(W.specs[id])===o?'selected':''}>${o}</option>`).join('')}</select>`}</label>`}).join('')}</div>`).join('')}`}
+ if(k==='design')b=`<h2>التصميم الداخلي</h2><div class="tabs">${CATS.map(([id,n])=>`<button class="${W.cat===id?'on':''}" onclick="W.cat='${id}';route()">${n}</button>`).join('')}</div><div class="grid">${OPTS.filter(o=>o.cat===W.cat).map(o=>{const av=c.available.includes(o.id);return tile(W.opts[W.cat]===o.id,av,`<span class="sw" style="background:${o.color}"></span><div class="in"><h4>${o.name}</h4><small class="mu">${av?(DB.options[o.id]?'+'+f(DB.options[o.id]):'مشمول'):'غير متاح في هذه الباقة'}</small></div>`,`W.opts['${W.cat}']='${o.id}';route()`)}).join('')}</div>`;
+ if(k==='options')b=`<h2>خيارات إضافية</h2><div class="grid">${OPTS.filter(o=>o.cat==='extra').map(o=>{const av=c.available.includes(o.id),on=W.opts.extra.includes(o.id);return tile(on,av,`<div class="in"><h4>${on?'✓ ':''}${o.name}</h4><small class="mu">${av?'+'+f(DB.options[o.id]):'غير متاح في هذه الباقة'}</small></div>`,`toggleX('${o.id}')`)}).join('')}</div>`;
+ if(k==='review'){const p=pr();b=`<h2>مراجعة التكوين</h2><div class="lab">TYPE / PACKAGE <a href="#/configurator/type" class="mu">[ تعديل ]</a></div><div class="row"><span>${tName(W.type)}</span><b>${W.pkg.toUpperCase()}</b></div><div class="lab">TECHNICAL <a href="#/configurator/technical" class="mu">[ تعديل ]</a></div>${['ratedLoad','passengers','speed','stops','machine','controller'].map(id=>`<div class="row"><span class="mu">${SPECS.find(s=>s[0]===id)[2]}</span><b>${W.specs[id]}</b></div>`).join('')}<div class="lab">INTERIOR <a href="#/configurator/design" class="mu">[ تعديل ]</a></div>${CATS.map(([id,n])=>`<div class="row"><span class="mu">${n}</span><b>${optOf(W.opts[id]).name}</b></div>`).join('')}<div class="lab">OPTIONS <a href="#/configurator/options" class="mu">[ تعديل ]</a></div>${W.opts.extra.map(x=>`<div class="row"><span>${optOf(x).name}</span></div>`).join('')||'<span class="mu">لا يوجد</span>'}<div class="lab">PRICE</div><div class="tot">${f(p.total)}</div>${disc()}`}
+ if(k==='quote'){const ct=W.contact||{},fl=(id,l,req)=>`<label>${l}${req?' *':''}<input value="${ct[id]||''}" onchange="W.contact['${id}']=this.value"></label>`;b=`<h2>طلب عرض سعر</h2><div class="grid">${fl('name','الاسم',1)}${fl('phone','رقم الهاتف',1)}${fl('whatsapp','WhatsApp')}${fl('email','البريد الإلكتروني')}${fl('city','المدينة')}${fl('project','نوع المشروع')}</div><label>ملاحظات إضافية<input value="${ct.notes||''}" onchange="W.contact.notes=this.value"></label>${disc()}`}
+ const nx=k==='quote'?`<button class="gold" onclick="submitQuote()">إرسال طلب عرض السعر</button>`:`<button class="gold" onclick="nextStep(${i})">${k==='options'?'REVIEW CONFIGURATION':'متابعة'}</button>`;
+ const left=`<div class="pan">${b}${(W.err||[]).map(e=>`<p class="err" role="alert">${e}</p>`).join('')}<div class="bar"><button onclick="${i?`go('/configurator/${KEYS[i-1]}')`:'0'}">رجوع</button>${nx}</div></div>`;
+ const view=()=>`<div class="pan sticky"><div class="lab">LIVE PREVIEW</div>${scene(W.opts,W.open!==false)}<div class="bar"><button onclick="W.open=W.open===false;route()">${W.open===false?'فتح الباب':'غلق الباب'}</button></div></div>`;
+ return `${head}<div class="steps">${KN.map((n,j)=>`<a href="#/configurator/${KEYS[j]}" class="${j===i?'on':j<i?'ok':''}">${j<i?'✓ ':''}0${j+1} ${n}</a>`).join('')}</div><div class="cfg ${W.pkg?'':'one'}">${left}${W.pkg?view()+summary():''}</div>`}
+const disc=()=>`<div class="note">السعر تقديري ويخضع للمراجعة الفنية والمعاينة قبل إصدار العرض النهائي.<br><span style="font-family:Inter">Estimated price only. Final quotation is subject to technical review and site inspection.</span></div>`;
+function summary(){const p=pr();return `<div class="pan sticky"><div class="lab">YOUR ELEVATOR</div><h4>${tName(W.type)} · ${W.pkg.toUpperCase()}</h4><div class="row"><span class="mu">BASE PRICE</span><span>${f(p.base)}</span></div>${[...p.mods,...p.opts].map(x=>`<div class="row"><span class="mu">${x.l}</span><span>+${f(x.v).replace(' EGP','')}</span></div>`).join('')}<div class="row"><span class="mu">التركيب والنقل</span><span>${f(p.install+p.transport)}</span></div><div class="lab">ESTIMATED TOTAL</div><div class="tot">${f(p.total)}</div></div>`}
+function pickType(t){if(W.type!==t){W={...W,type:t,pkg:null,err:[]}}go('/configurator/package')}
+function pickPkg(p){W.pkg=p;Object.assign(W,defaultSel(W.type,p));W.cat='walls';W.err=[];go('/configurator/technical')}
+function toggleX(id){const e=W.opts.extra;e.includes(id)?e.splice(e.indexOf(id),1):e.push(id);route()}
+function nextStep(i){W.err=[];if(i===0&&!W.type)W.err=['من فضلك اختر نوع المصعد.'];if(i===1&&!W.pkg)W.err=['من فضلك اختر الباقة.'];if(i===2)W.err=validateSpecs(W.specs);if(W.err.length)return route();go('/configurator/'+KEYS[i+1])}
+function submitQuote(){const ct=W.contact||{};if(!ct.name||!ct.phone){W.err=['من فضلك أدخل الاسم ورقم الهاتف.'];return route()}
+ const b=pr(),q={id:'ALM-2026-'+String(QUOTES.length+1).padStart(4,'0'),contact:ct,snap:{type:tName(W.type),pkg:W.pkg.toUpperCase(),typeId:W.type,pkgId:W.pkg,specs:{...W.specs},opts:[...b.mods,...b.opts],b},status:'new',date:new Date().toISOString().slice(0,10)}; // snapshot: frozen copy
+ QUOTES.push(q);save();W.last=q;W.err=[];go('/quote/success')}
+function success(){const q=W.last;if(!q)return `<div class="pan" style="margin:60px auto;max-width:480px"><a href="#/configurator/type">ابدأ تصميم المصعد</a></div>`;
+ return `${head}<div class="pan" style="max-width:560px;margin:50px auto;text-align:center"><div class="lab">REQUEST RECEIVED</div><h2>تم استلام طلبك بنجاح</h2><div class="tot">${q.id}</div><p class="mu">سيقوم فريق الأمان بمراجعة المواصفات والتواصل معك قريبًا.</p><div class="bar" style="justify-content:center"><a href="#/configurator/type"><button onclick="W={}">العودة للرئيسية</button></a><a target="_blank" rel="noopener" href="https://wa.me/?text=${encodeURIComponent(waMessage(q))}"><button class="gold">مشاركة الطلب عبر WhatsApp</button></a></div></div>`}
+/* ===== Admin ===== */
+const ST={new:'جديد',review:'قيد المراجعة',quoted:'تم إرسال العرض',won:'مقبول',lost:'مرفوض'};
+function admin(tab){const T=[['dashboard','Dashboard'],['configurations','Configurations'],['quotations','Quotations']];
+ return `<div class="shell"><aside class="side"><a class="logo" href="#/configurator/type"><b>ALAMAN</b><small>Admin</small></a>${T.map(([k,n])=>`<a class="${tab===k?'on':''}" href="#/admin/${k}">${n}</a>`).join('')}<a href="#/configurator/type">← المصمم</a></aside><main class="main">${tab==='configurations'?adminCfg():tab==='quotations'?`<h2>Quotations</h2>${qtable(QUOTES)}`:adminDash()}</main></div>`}
+const qtable=q=>`<div class="pan tw"><table><tr><th>Quote ID</th><th>Customer</th><th>Type</th><th>Package</th><th>Price (snapshot)</th><th>Status</th><th>Date</th></tr>${q.slice().reverse().map(x=>`<tr><td>${x.id}</td><td>${x.contact.name}</td><td>${x.snap.type}</td><td>${x.snap.pkg}</td><td>${f(x.snap.b.total)}</td><td><select style="width:auto;margin:0" onchange="QUOTES.find(z=>z.id=='${x.id}').status=this.value;save();route()">${Object.entries(ST).map(([k,v])=>`<option value="${k}" ${x.status===k?'selected':''}>${v}</option>`).join('')}</select></td><td>${x.date}</td></tr>`).join('')}</table></div>`;
+function adminDash(){const k=[['Total Customers',new Set(QUOTES.map(q=>q.contact.phone)).size],['Total Quotations',QUOTES.length],['Pending Requests',QUOTES.filter(q=>q.status==='new'||q.status==='review').length],['Estimated Sales Value',f(QUOTES.reduce((s,q)=>s+q.snap.b.total,0))]];
+ return `<h2>Overview</h2><div class="grid">${k.map(([l,v])=>`<div class="pan"><div class="lab">${l}</div><div class="tot" style="font-size:${typeof v==='number'?34:20}px">${v}</div></div>`).join('')}</div><h3 style="margin-top:24px">Recent Quotations</h3>${qtable(QUOTES.slice(-6))}`}
+function adminCfg(){const c=getConfiguration(A.t,A.p);
+ return `<h2>Configurations</h2><div class="pan"><div class="grid"><label>Elevator Type<select onchange="A.t=this.value;route()">${TYPES.map(t=>`<option value="${t[0]}" ${A.t===t[0]?'selected':''}>${t[1]}</option>`).join('')}</select></label><label>Package<select onchange="A.p=this.value;route()">${PKGS.map(p=>`<option value="${p[0]}" ${A.p===p[0]?'selected':''}>${p[1]}</option>`).join('')}</select></label><label>Base Price (EGP)<input type="number" value="${c.base}" onchange="DB.configs['${A.t}.${A.p}'].base=+this.value;save();route()"></label></div>
+ <div class="note">القيم تجريبية. التغيير هنا يؤثر على الطلبات الجديدة فقط؛ الطلبات القديمة محفوظة بلقطة سعرها.</div></div>
+ <div class="pan" style="margin-top:14px"><h3>Options: availability (this configuration) & price (all)</h3><div class="tw"><table><tr><th>Option</th><th>Category</th><th>Available</th><th>Price</th></tr>${OPTS.map(o=>`<tr><td>${o.name}</td><td>${o.cat}</td><td><input type="checkbox" style="width:auto" ${c.available.includes(o.id)?'checked':''} onchange="toggleAv('${o.id}')"></td><td><input type="number" style="width:110px;margin:0" value="${DB.options[o.id]}" onchange="DB.options['${o.id}']=+this.value;save();route()"></td></tr>`).join('')}</table></div></div>
+ <div class="pan" style="margin-top:14px"><h3>Pricing Rules</h3><div class="grid">${DB.rules.map((r,i)=>`<label>${r.label} (${r.param} ${r.op} ${r.value}, ${r.kind})<input type="number" value="${r.amount}" onchange="DB.rules[${i}].amount=+this.value;save();route()"></label>`).join('')}</div></div>`}
+function toggleAv(id){const c=getConfiguration(A.t,A.p),a=c.available;a.includes(id)?a.splice(a.indexOf(id),1):a.push(id);save();route()}
+/* ===== Chatbot widget (uses ChatbotService) ===== */
+function chat(){chat_el=document.getElementById('chat');chat_el.innerHTML=CH.open?`<div class="pan"><div class="lab">ALAMAN ASSISTANT</div><div class="msgs">${CH.m.map(m=>`<p class="${m[0]==='u'?'u':''}">${m[1]}</p>`).join('')||'<p class="mu">اسألني عن الأنواع أو الباقات أو الأسعار.</p>'}</div><input id="cq" placeholder="اكتب سؤالك" onkeydown="if(event.key==='Enter'){CH.m.push(['u',this.value],['b',ChatbotService.answer(this.value.toLowerCase())]);chat()}"><div class="bar"><a href="#/configurator/type"><button class="gold" onclick="CH.open=false;chat()">ابدأ تصميم المصعد</button></a></div></div>`:''}
+load();route();chat();
+</script>
+</body>
+</html>
