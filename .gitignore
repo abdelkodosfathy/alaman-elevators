@@ -6,3 +6,6 @@ dist/
 apps/api/.pgdata/
 *.log
 next-env.d.ts
+*.tsbuildinfo
+apps/web/blender/.out/
+apps/web/blender/.build.log

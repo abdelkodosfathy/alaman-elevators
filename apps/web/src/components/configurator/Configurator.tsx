@@ -5,6 +5,9 @@ import { estimate } from '@/lib/api';
 import { attributesOf, defaultSelections, normalize } from '@/lib/rules';
 import type { Configurator as Config, PriceResult, Selections } from '@/lib/types';
 import { AttributeField } from './AttributeField';
+import { CabinViewer } from './cabin3d/CabinViewer';
+import type { Focus } from './cabin3d/CabinScene';
+import { cabinLook, FOCUS } from './cabin3d/look';
 import { CabinPreview, EscalatorPreview } from './Illustrations';
 import { PriceBreakdown, PriceRange } from './PriceSummary';
 import { QuoteForm } from './QuoteForm';
@@ -27,6 +30,8 @@ export function Configurator({ config }: { config: Config }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showDetails, setShowDetails] = useState(false);
+  const [focus, setFocus] = useState<Focus | null>(null);
+  const [viewerOpen, setViewerOpen] = useState(false);
 
   const steps = config.steps;
   const isReview = stepIdx === steps.length;
@@ -61,7 +66,14 @@ export function Configurator({ config }: { config: Config }) {
     };
   }, [config.slug, sel]);
 
-  const change = (key: string, value: Selections[string]) => setSel((s) => normalize(config, { ...s, [key]: value }));
+  const change = (key: string, value: Selections[string]) => {
+    setSel((s) => normalize(config, { ...s, [key]: value }));
+    // Turn the 3D camera toward the part that just changed.
+    if (FOCUS[key]) setFocus({ ...FOCUS[key], key: Date.now() });
+  };
+
+  const is3d = config.kind === 'ELEVATOR';
+  const look = useMemo(() => (is3d ? cabinLook(config, sel) : null), [is3d, config, sel]);
 
   const go = (i: number) => {
     setStepIdx(i);
@@ -101,6 +113,15 @@ export function Configurator({ config }: { config: Config }) {
         <p className="text-muted text-sm">تصميم {config.nameAr}</p>
         <h1 className="text-2xl font-extrabold text-navy sm:text-3xl">{isReview ? 'مراجعة الطلب' : step.titleAr}</h1>
         {!isReview && step.descriptionAr && <p className="text-muted mt-1">{step.descriptionAr}</p>}
+        {is3d && (
+          <button
+            type="button"
+            onClick={() => setViewerOpen(true)}
+            className="mt-3 inline-flex items-center gap-2 rounded-xl bg-navy px-4 py-2 text-sm font-bold text-white lg:hidden"
+          >
+            <span aria-hidden>◫</span> شوف الكابينة 3D من الداخل
+          </button>
+        )}
       </div>
 
       {/* Stepper */}
@@ -178,7 +199,18 @@ export function Configurator({ config }: { config: Config }) {
         <aside className="hidden lg:block">
           <div className="sticky top-4 space-y-4">
             <div className="overflow-hidden rounded-2xl bg-navy text-white">
-              <div className="bg-navy-light px-5 pt-4">{preview}</div>
+              {look ? (
+                <CabinViewer
+                  look={look}
+                  focus={focus}
+                  fallback={<div className="px-5 pt-4">{preview}</div>}
+                  className="h-72 bg-navy-light"
+                  open={viewerOpen}
+                  onOpenChange={setViewerOpen}
+                />
+              ) : (
+                <div className="bg-navy-light px-5 pt-4">{preview}</div>
+              )}
               <div className="p-5">
                 <PriceRange price={price} loading={loading} dark />
                 {error && <p className="mt-2 text-xs text-red-300">{error}</p>}

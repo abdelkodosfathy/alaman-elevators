@@ -54,6 +54,21 @@ A new product line (e.g. dumbwaiter, car lift) is just new rows. No code changes
 
 Events `quote.created` and `quote.status_changed` are POSTed as JSON to registered URLs with headers `X-Alaman-Event` and `X-Alaman-Signature` (hex HMAC-SHA256 of the raw body using the webhook secret).
 
+## 3D cabin model
+
+The configurator shows the elevator interior in real-time 3D (three.js / React Three Fiber). The car is modelled in Blender by script, so it is reproducible and versioned like code:
+
+```bash
+npm run models -w @alaman/web                      # all sizes (needs Blender 4.x)
+npm run models -w @alaman/web -- --sizes 630       # one size
+npm run models -w @alaman/web -- --compress-only   # re-compress existing raw exports
+```
+
+- `apps/web/blender/build_cabin.py` builds one car per rated load (320–1600 kg) with bevelled panels, door, ceilings, handrails and car panel, bakes ambient occlusion into a shared atlas and exports a GLB. `build-models.mjs` then meshopt-compresses it into `apps/web/public/models/cabin/` (~0.6 MB model + ~0.4 MB AO per size; only the selected size is downloaded).
+- Finishes are not baked: the web app applies wall/floor/ceiling/handrail materials by material name and toggles option nodes (door type, ceiling style, buttons per stop, extras…) by node name. Those names are the contract between `build_cabin.py` and `ModelCabin.tsx`.
+- If a model file is missing the viewer falls back to a lighter procedural cabin, and to a 2D illustration without WebGL.
+- Set `BLENDER=/path/to/blender` if Blender isn't installed in its default location. Baking runs on the GPU when Cycles finds one; on CPU allow ~8 minutes per size.
+
 ## Notes
 
 - Seed prices are indicative placeholders; set real prices from the admin panel.
