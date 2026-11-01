@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.next/
+.env
+.env.local
+apps/api/.pgdata/
+*.log
+next-env.d.ts

@@ -1,0 +1,188 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum ProductKind {
+  ELEVATOR
+  ESCALATOR
+}
+
+/// How the customer answers an attribute.
+enum InputType {
+  SINGLE // choose exactly one option
+  MULTI // choose any number of options
+  NUMBER // enter a quantity (stops, rise in meters, ...)
+}
+
+enum PriceType {
+  FIXED // flat amount
+  PER_UNIT // amount x value of the NUMBER attribute named in unitAttributeKey
+  PERCENT // percentage of the base + fixed items subtotal
+}
+
+enum RuleType {
+  REQUIRES
+  EXCLUDES
+}
+
+enum QuoteStatus {
+  NEW
+  CONTACTED
+  QUOTED
+  WON
+  LOST
+}
+
+/// A configurable product line (passenger elevator, escalator, ...).
+/// New product lines are added as data, no code change needed.
+model Product {
+  id            String      @id @default(cuid())
+  slug          String      @unique
+  kind          ProductKind
+  nameAr        String
+  nameEn        String
+  descriptionAr String?
+  imageUrl      String?
+  basePrice     Int
+  isActive      Boolean     @default(true)
+  sortOrder     Int         @default(0)
+  steps         Step[]
+  quotes        Quote[]
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+}
+
+/// A wizard step grouping one or more attributes.
+model Step {
+  id            String      @id @default(cuid())
+  productId     String
+  product       Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
+  key           String
+  titleAr       String
+  titleEn       String
+  descriptionAr String?
+  sortOrder     Int         @default(0)
+  attributes    Attribute[]
+
+  @@unique([productId, key])
+}
+
+/// A single choice the customer makes (wall finish, number of stops, ...).
+model Attribute {
+  id            String    @id @default(cuid())
+  stepId        String
+  step          Step      @relation(fields: [stepId], references: [id], onDelete: Cascade)
+  productId     String
+  key           String
+  labelAr       String
+  labelEn       String
+  helpAr        String?
+  inputType     InputType
+  required      Boolean   @default(true)
+  // NUMBER attributes only
+  min           Int?
+  max           Int?
+  defaultValue  Int?
+  unitAr        String?
+  includedUnits Int       @default(0)
+  unitPrice     Int       @default(0)
+  sortOrder     Int       @default(0)
+  options       Option[]
+
+  @@unique([productId, key])
+}
+
+model Option {
+  id               String       @id @default(cuid())
+  attributeId      String
+  attribute        Attribute    @relation(fields: [attributeId], references: [id], onDelete: Cascade)
+  code             String       @unique
+  labelAr          String
+  labelEn          String
+  descriptionAr    String?
+  imageUrl         String?
+  swatch           String?
+  priceType        PriceType    @default(FIXED)
+  price            Int          @default(0)
+  unitAttributeKey String?
+  isDefault        Boolean      @default(false)
+  isActive         Boolean      @default(true)
+  sortOrder        Int          @default(0)
+  rules            OptionRule[] @relation("RuleSource")
+  targetedBy       OptionRule[] @relation("RuleTarget")
+}
+
+/// Compatibility between options, e.g. hydraulic drive EXCLUDES 1.6 m/s.
+model OptionRule {
+  id        String   @id @default(cuid())
+  type      RuleType
+  optionId  String
+  option    Option   @relation("RuleSource", fields: [optionId], references: [id], onDelete: Cascade)
+  targetId  String
+  target    Option   @relation("RuleTarget", fields: [targetId], references: [id], onDelete: Cascade)
+  messageAr String?
+
+  @@unique([optionId, targetId, type])
+}
+
+model Quote {
+  id           String      @id @default(cuid())
+  number       String      @unique
+  publicToken  String      @unique @default(cuid())
+  productId    String
+  product      Product     @relation(fields: [productId], references: [id])
+  status       QuoteStatus @default(NEW)
+  customerName String
+  phone        String
+  whatsapp     String?
+  email        String?
+  city         String?
+  projectType  String?
+  notes        String?
+  /// Raw selections keyed by attribute key
+  selections   Json
+  /// Priced lines snapshot at the time of the request
+  breakdown    Json
+  subtotal     Int
+  vat          Int
+  total        Int
+  estimateLow  Int
+  estimateHigh Int
+  currency     String      @default("EGP")
+  /// Which platform created the quote (web, mobile, crm, ...)
+  source       String      @default("web")
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  @@index([status, createdAt])
+}
+
+model AdminUser {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String
+  passwordHash String
+  createdAt    DateTime @default(now())
+}
+
+/// Outgoing integrations (CRM, WhatsApp gateway, ERP, ...).
+model Webhook {
+  id              String    @id @default(cuid())
+  url             String
+  secret          String
+  events          String[]
+  isActive        Boolean   @default(true)
+  lastStatus      Int?
+  lastDeliveredAt DateTime?
+  createdAt       DateTime  @default(now())
+}
+
+model Counter {
+  key   String @id
+  value Int
+}
