@@ -72,7 +72,7 @@ const elevator: ProductSeed = {
           ['residential', 'سكني', 'Residential', 0, { ...def, descriptionAr: 'للعمارات والأبراج السكنية' }],
           ['villa', 'فيلا / VIP', 'Villa / VIP', 60_000, { descriptionAr: 'كابينة فاخرة للفلل والمنازل الخاصة' }],
           ['commercial', 'تجاري / إداري', 'Commercial', 90_000, { descriptionAr: 'مولات ومباني إدارية بخدمة كثيفة' }],
-          ['hospital', 'مستشفى (نقالة)', 'Hospital (bed)', 180_000, { descriptionAr: 'كابينة عميقة لنقل الأسرّة والنقالات' }],
+          ['hospital', 'مستشفى', 'Hospital (bed)', 180_000, { descriptionAr: 'كابينة عميقة لنقل الأسرّة' }],
           ['freight', 'بضائع', 'Freight', 120_000, { descriptionAr: 'لنقل البضائع والأحمال الثقيلة' }],
         ]),
         { key: 'stops', labelAr: 'عدد الوقفات (الأدوار)', labelEn: 'Stops', inputType: 'NUMBER', min: 2, max: 30, defaultValue: 5, unitAr: 'وقفة', includedUnits: 2, unitPrice: 42_000, helpAr: 'السعر الأساسي يشمل وقفتين، وكل وقفة إضافية تُحسب منفصلة.' },

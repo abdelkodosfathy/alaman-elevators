@@ -2,6 +2,15 @@
   "version": "0.0.1",
   "configurations": [
     {
+      "name": "db",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "db:start"
+      ],
+      "port": 5432
+    },
+    {
       "name": "static",
       "runtimeExecutable": "python",
       "runtimeArgs": [

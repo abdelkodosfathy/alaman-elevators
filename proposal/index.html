@@ -194,33 +194,23 @@
 
   @media (prefers-reduced-motion: reduce) { .track { transition: none; } }
 
-  /* phones: the deck becomes a scrolling document */
+  /* phones keep the exact desktop slide; only the controls get tighter and touch drives the deck */
+  .viewport { touch-action: none; }
+  .rotate { display: none; font-size: 12px; color: var(--muted); text-align: center; }
   @media (max-width: 760px) {
-    html, body { height: auto; }
-    :root { --fs-xs: .8rem; --fs-sm: .95rem; --fs-md: 1.05rem; --fs-lg: 1.25rem; --fs-xl: 1.6rem; --fs-hero: 2.4rem; --pad: 22px; --gap: 16px; }
-    .app { height: auto; justify-content: flex-start; }
-    .viewport { width: 100%; aspect-ratio: auto; overflow: visible; container-type: normal; }
-    .track { transform: none !important; display: flex; flex-direction: column; }
-    .slide { height: auto; min-height: 0; }
-    .slide + .slide { border-top: 8px solid var(--bg); }
-    .panel { display: none; }
-    .cover { gap: 28px; }
-    .scope, .cols.two, .cols.three, .steps { grid-template-columns: 1fr; }
-    .scope article { padding: 16px; gap: 8px; }
-    .scope .ix { display: none; }
-    .cols section, .scope article, .steps li { gap: 10px; }
-    .gantt-wrap { overflow-x: auto; }
-    .gantt { min-width: 640px; grid-template-columns: 150px 1fr; row-gap: 6px; }
-    .gantt .tr { height: 26px; }
-    .gantt .pay { height: 26px; }
-    .pays, .split { grid-template-columns: 1fr; }
-    .split { display: none; }
-    .pays section { padding: 14px 0; border-inline-start: 0; border-top: 1px solid var(--line); }
-    .pays section:first-child { border-top: 0; }
-    ul.ticks li { gap: 10px; }
-    ul.ticks li::before { width: 6px; height: 6px; transform: translateY(-2px) rotate(45deg); }
-    .foot { padding-top: 10px; }
-    .legend i { width: 14px; height: 8px; }
+    .app { gap: 10px; }
+    .viewport { width: min(100%, calc((100dvh - 90px) * 16 / 9)); }
+    .hint { display: none; }
+    .rotate { display: block; }
+  }
+  @media (max-width: 760px) and (orientation: landscape) { .rotate { display: none; } }
+  /* phones held sideways: give the slide almost all the height */
+  @media (max-height: 500px) {
+    .app { gap: 6px; padding-block: 6px; }
+    .viewport { width: min(100%, calc((100dvh - 56px) * 16 / 9)); }
+    .call, .floor { height: 36px; }
+    .call { width: 36px; }
+    .hint, .rotate { display: none; }
   }
 </style>
 </head>
@@ -294,7 +284,7 @@
         </div>
         <div class="cols two">
           <section>
-            <h3>فورم تصميم المصعد</h3>
+            <h3>استمارة تصميم المصعد</h3>
             <ul class="ticks">
               <li>اختيار نوع المنتج: مصعد أو سلم كهربائي</li>
               <li>خطوات واضحة: الحمولة، عدد الأدوار، الكابينة، الأبواب، الإضافات</li>
@@ -302,7 +292,7 @@
               <li>منع الاختيارات غير المتوافقة مع بعضها تلقائيًا</li>
               <li>إرسال طلب عرض السعر وتحميله ملف PDF</li>
             </ul>
-            <p class="note">العمل على الفورم بدأ بالفعل، ويُستكمل في الشهر الأول.</p>
+            <p class="note">العمل على الاستمارة بدأ بالفعل، ويُستكمل في الشهر الأول.</p>
           </section>
           <section>
             <h3>العرض ثلاثي الأبعاد</h3>
@@ -380,7 +370,7 @@
             <div class="tr"><div class="bar" style="--s:6;--e:8"></div></div>
             <span class="lbl">المساعد الذكي</span>
             <div class="tr"><div class="bar p2" style="--s:9;--e:11"></div></div>
-            <span class="lbl">اختبار وإطلاق وتدريب</span>
+            <span class="lbl">اختبار وإطلاق</span>
             <div class="tr"><div class="bar launch" style="--s:11;--e:12"></div></div>
 
             <span class="lbl" style="color:var(--brass);font-weight:700">الدفعات</span>
@@ -434,46 +424,23 @@
             <ul class="ticks">
               <li>المساعد الذكي (شات بوت)</li>
               <li>إطلاق المنصة على الدومين الخاص بكم</li>
-              <li>تدريب فريقكم على لوحة التحكم</li>
             </ul>
           </section>
         </div>
         <div class="foot"><span>منصة الأمان الرقمية</span><span>الدفعات</span></div>
       </section>
 
-      <!-- 7 -->
-      <section class="slide" id="s7" aria-label="خطوات البدء">
-        <div class="head">
-          <div class="eyebrow">خطوات البدء</div>
-          <h2>نبدأ هذا الأسبوع</h2>
-        </div>
-        <ol class="steps">
-          <li>
-            <h3>اعتماد العرض</h3>
-            <p>الموافقة على نطاق العمل والجدول الزمني، وسداد الدفعة الأولى (25%).</p>
-          </li>
-          <li>
-            <h3>تسليم المحتوى</h3>
-            <p>الشعار والألوان، صور المشاريع والكبائن، قائمة الأسعار والبنود الحالية، والأسئلة التي يكررها العملاء.</p>
-          </li>
-          <li>
-            <h3>اجتماع الانطلاق</h3>
-            <p>نراجع التفاصيل معًا ونحدد موعد مراجعة أسبوعي، تشاهدون فيه آخر ما تم تنفيذه.</p>
-          </li>
-        </ol>
-        <p class="close">شكرًا لثقتكم.</p>
-        <div class="foot"><span>منصة الأمان الرقمية</span><span>الأمان للمصاعد والسلالم</span></div>
-      </section>
 
     </div>
   </div>
 
   <nav class="panel" aria-label="التنقل بين الشرائح">
     <button class="call" id="up" type="button" aria-label="الشريحة السابقة">▲</button>
-    <div class="floor" aria-live="polite"><b id="num">1</b><small id="of">من 7</small></div>
+    <div class="floor" aria-live="polite"><b id="num">1</b><small id="of">من 6</small></div>
     <button class="call" id="down" type="button" aria-label="الشريحة التالية">▼</button>
     <span class="hint">استخدم الأسهم للتنقل</span>
   </nav>
+  <p class="rotate">اسحب السلايد بإصبعك للتنقل · لعرض أكبر اقلب الموبايل بالعرض</p>
 </div>
 
 <script>
@@ -491,7 +458,7 @@
       num.textContent = i + 1;
       up.disabled = i === 0;
       down.disabled = i === slides.length - 1;
-      slides.forEach((s, k) => s.toggleAttribute('inert', k !== i && !matchMedia('(max-width: 760px)').matches));
+      slides.forEach((s, k) => s.toggleAttribute('inert', k !== i));
       try { history.replaceState(null, '', '#s' + (i + 1)); } catch (e) {}
     }
 
@@ -503,7 +470,18 @@
       else if (e.key === 'Home') go(0);
       else if (e.key === 'End') go(slides.length - 1);
     });
-    matchMedia('(max-width: 760px)').addEventListener('change', () => go(i));
+    // swipe: up or left = next, down or right = previous
+    const vp = document.querySelector('.viewport');
+    let sx = 0, sy = 0, tracking = false;
+    vp.addEventListener('touchstart', (e) => { sx = e.touches[0].clientX; sy = e.touches[0].clientY; tracking = true; }, { passive: true });
+    vp.addEventListener('touchend', (e) => {
+      if (!tracking) return;
+      tracking = false;
+      const dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy;
+      if (Math.max(Math.abs(dx), Math.abs(dy)) < 40) return;
+      const forward = Math.abs(dy) > Math.abs(dx) ? dy < 0 : dx < 0;
+      go(forward ? i + 1 : i - 1);
+    });
 
     const m = /^#s(\d+)$/.exec(location.hash);
     go(m ? Number(m[1]) - 1 : 0);
