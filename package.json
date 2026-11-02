@@ -9,6 +9,7 @@
     "db:setup": "npm run db:setup -w @alaman/api",
     "dev:api": "npm run start:dev -w @alaman/api",
     "dev:web": "npm run dev -w @alaman/web",
+    "dev:viewer": "npm run dev -w @alaman/viewer",
     "test": "npm test -w @alaman/api",
     "build": "npm run build -w @alaman/api && npm run build -w @alaman/web"
   }

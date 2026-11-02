@@ -1,0 +1,23 @@
+@import 'tailwindcss';
+
+@theme {
+  --color-bg: #0e1013;
+  --color-panel: #16191e;
+  --color-line: #262a31;
+  --color-ink: #e6e8eb;
+  --color-muted: #8a919c;
+  --color-accent: #6aa9ff;
+  --font-sans: ui-sans-serif, 'Segoe UI', system-ui, sans-serif;
+}
+
+html,
+body {
+  height: 100%;
+  background: var(--color-bg);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+}
+
+input[type='range'] {
+  accent-color: var(--color-accent);
+}

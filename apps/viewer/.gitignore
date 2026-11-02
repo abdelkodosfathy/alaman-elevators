@@ -1,0 +1,2 @@
+# copied from node_modules/three by scripts/copy-decoders.mjs
+public/decoders/
