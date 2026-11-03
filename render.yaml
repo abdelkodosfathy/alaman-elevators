@@ -1,0 +1,38 @@
+# Render Blueprint for the API. The web app deploys separately on Vercel (root directory apps/web).
+# Values marked sync: false are entered in the Render dashboard when the Blueprint is created.
+services:
+  - type: web
+    name: alaman-api
+    runtime: node
+    plan: free
+    region: frankfurt
+    buildCommand: npm ci && npm exec -w @alaman/api -- prisma generate && npm run build -w @alaman/api
+    # Free instances have no pre-deploy step, so migrations (and the first-time seed) run on start.
+    startCommand: npm run db:deploy -w @alaman/api && npm run start -w @alaman/api
+    healthCheckPath: /api/v1/health
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      # Neon connection string (direct, not the -pooler host), with ?sslmode=require
+      - key: DATABASE_URL
+        sync: false
+      # The Vercel URL of the web app, e.g. https://alaman-web.vercel.app
+      - key: CORS_ORIGINS
+        sync: false
+      - key: WEB_URL
+        sync: false
+      - key: ADMIN_EMAIL
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: VAT_RATE
+        value: "0.14"
+      - key: ESTIMATE_MARGIN
+        value: "0.07"
+      - key: CURRENCY
+        value: EGP
+      # Keep puppeteer's Chrome inside the project so it survives from build to runtime (quote PDFs).
+      - key: PUPPETEER_CACHE_DIR
+        value: /opt/render/project/src/.cache/puppeteer

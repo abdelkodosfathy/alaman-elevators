@@ -9,6 +9,7 @@
     "db:start": "node scripts/dev-db.mjs",
     "db:setup": "prisma migrate dev --name init && prisma db seed",
     "db:seed": "prisma db seed",
+    "db:deploy": "prisma migrate deploy && tsx scripts/seed-if-empty.ts",
     "test": "tsx --test src/**/*.spec.ts"
   },
   "prisma": {
